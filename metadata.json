@@ -1,0 +1,6 @@
+{
+  "name": "InternHub — Secure Full-Stack Internship Portal",
+  "description": "Production-grade, secure full-stack internship portal with Vanilla JS frontend, Express REST API, SQLite database, rate limiting, and strict security validation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

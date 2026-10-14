@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InternHub — Secure Full-Stack Internship Portal</title>
+  <meta name="description" content="Production-grade, secure full-stack internship portal with Vanilla JS frontend, Express REST API, SQLite database, rate limiting, and strict security validation." />
+  <meta property="og:title" content="InternHub — Secure Full-Stack Internship Portal" />
+  <meta property="og:description" content="Production-grade, secure full-stack internship portal with Vanilla JS frontend, Express REST API, SQLite database, rate limiting, and strict security validation." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/frontend/css/style.css" />
+</head>
+<body>
+  <!-- Keyboard Navigation Skip Link -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="container header-inner">
+      <a href="/" class="brand-wrapper" aria-label="InternHub Homepage">
+        <div class="brand-logo-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            <rect width="20" height="14" x="2" y="6" rx="2"></rect>
+          </svg>
+        </div>
+        <div>
+          <span class="brand-title">Intern<span>Hub</span></span>
+          <span class="brand-tag">v3.0 Secure</span>
+        </div>
+      </a>
+
+      <div class="header-badges">
+        <div class="security-badge" title="Protected by Helmet, strict CORS, parameterized queries, and rate limiting">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+          <span>Verified Security</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" aria-labelledby="hero-heading">
+    <div class="container hero-content">
+      <div class="hero-pill">
+        <span aria-hidden="true">🚀</span>
+        <span>Verified High-Impact Opportunities</span>
+      </div>
+      <h1 id="hero-heading" class="hero-title">Launch Your Career with Top Tech Internships</h1>
+      <p class="hero-subtitle">
+        Discover verified software engineering, data science, cybersecurity, and design internships. Built with zero tracking, end-to-end server validation, and instant confirmation.
+      </p>
+    </div>
+  </section>
+
+  <!-- Main Content Area -->
+  <main id="main-content" class="container" role="main">
+    <!-- Controls Section: Search & Domain Filters -->
+    <section class="controls-section" aria-label="Internship filters and search">
+      <div class="controls-card">
+        <div class="controls-top-row">
+          <div class="search-input-wrapper">
+            <span class="search-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </span>
+            <input
+              type="search"
+              id="search-input"
+              class="search-input"
+              placeholder="Search by role, company, skills, or keywords..."
+              aria-label="Search internships by role, company, skills, or keywords"
+              autocomplete="off"
+            />
+          </div>
+        </div>
+
+        <!-- Domain filter pills -->
+        <div class="domain-filters-bar" role="toolbar" aria-label="Filter by industry domain">
+          <button type="button" class="filter-btn active" data-domain="All">All Domains</button>
+          <button type="button" class="filter-btn" data-domain="Web Development">Web Development</button>
+          <button type="button" class="filter-btn" data-domain="Data Science & AI">Data Science & AI</button>
+          <button type="button" class="filter-btn" data-domain="Cloud & DevOps">Cloud & DevOps</button>
+          <button type="button" class="filter-btn" data-domain="Cybersecurity">Cybersecurity</button>
+          <button type="button" class="filter-btn" data-domain="UI/UX Design">UI/UX Design</button>
+          <button type="button" class="filter-btn" data-domain="Mobile Development">Mobile Development</button>
+        </div>
+      </div>
+
+      <!-- Results Meta Information -->
+      <div class="results-meta-bar" aria-live="polite">
+        <span id="results-count" class="results-count">Showing internships...</span>
+      </div>
+    </section>
+
+    <!-- State Container (Loading, Empty, Failure) -->
+    <div id="state-container" style="display: none;"></div>
+
+    <!-- Internships Grid -->
+    <section id="internships-grid" class="internships-grid" aria-label="Available internships list">
+      <!-- Cards dynamically generated via safe DOM methods in app.js -->
+    </section>
+
+    <!-- Pagination Controls -->
+    <nav id="pagination-container" class="pagination-container" aria-label="Internship list pagination" style="display: none;">
+      <button type="button" id="btn-prev-page" class="btn-page" disabled>
+        <span aria-hidden="true">←</span> Previous
+      </button>
+      <span id="page-indicator" class="page-indicator" aria-current="page">Page 1 of 1</span>
+      <button type="button" id="btn-next-page" class="btn-page">
+        Next <span aria-hidden="true">→</span>
+      </button>
+    </nav>
+  </main>
+
+  <!-- Accessible Application Modal Dialog -->
+  <dialog id="application-dialog" aria-labelledby="dialog-job-title" aria-describedby="dialog-job-company">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <header class="modal-header">
+        <div class="modal-title-group">
+          <h2 id="dialog-job-title" class="modal-title">Apply for Internship</h2>
+          <div id="dialog-job-company" class="modal-subtitle">Company Details</div>
+        </div>
+        <button type="button" id="btn-close-dialog" class="btn-close" aria-label="Close application form">
+          &times;
+        </button>
+      </header>
+
+      <!-- Modal Body: Form -->
+      <div class="modal-body">
+        <!-- Error Alert Banner -->
+        <div id="form-alert-banner" class="form-alert-banner" role="alert"></div>
+
+        <form id="application-form" novalidate>
+          <!-- Hidden internship ID field -->
+          <input type="hidden" id="internship-id-input" name="internship_id" value="" />
+
+          <div class="form-grid">
+            <!-- 1. Full Name -->
+            <div class="form-group col-span-2">
+              <label for="fullName" class="form-label">
+                Full Name <span class="required-mark" aria-hidden="true">*</span>
+              </label>
+              <input
+                type="text"
+                id="fullName"
+                name="fullName"
+                class="form-input"
+                placeholder="e.g., Alex Morgan"
+                required
+                minlength="2"
+                maxlength="100"
+                autocomplete="name"
+              />
+              <span class="field-error" id="fullName-error" role="alert"></span>
+            </div>
+
+            <!-- 2. Email Address -->
+            <div class="form-group">
+              <label for="email" class="form-label">
+                Email Address <span class="required-mark" aria-hidden="true">*</span>
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                class="form-input"
+                placeholder="student@university.edu"
+                required
+                maxlength="120"
+                autocomplete="email"
+              />
+              <span class="field-error" id="email-error" role="alert"></span>
+            </div>
+
+            <!-- 3. Phone Number -->
+            <div class="form-group">
+              <label for="phone" class="form-label">
+                Phone Number <span class="required-mark" aria-hidden="true">*</span>
+              </label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                class="form-input"
+                placeholder="+1 (555) 019-2834"
+                required
+                autocomplete="tel"
+              />
+              <span class="field-error" id="phone-error" role="alert"></span>
+            </div>
+
+            <!-- 4. College / University -->
+            <div class="form-group">
+              <label for="college" class="form-label">
+                College / University <span class="required-mark" aria-hidden="true">*</span>
+              </label>
+              <input
+                type="text"
+                id="college"
+                name="college"
+                class="form-input"
+                placeholder="e.g., Stanford University"
+                required
+                minlength="2"
+                maxlength="150"
+              />
+              <span class="field-error" id="college-error" role="alert"></span>
+            </div>
+
+            <!-- 5. Course / Degree -->
+            <div class="form-group">
+              <label for="degree" class="form-label">
+                Course / Degree <span class="required-mark" aria-hidden="true">*</span>
+              </label>
+              <input
+                type="text"
+                id="degree"
+                name="degree"
+                class="form-input"
+                placeholder="e.g., B.S. Computer Science"
+                required
+                minlength="2"
+                maxlength="100"
+              />
+              <span class="field-error" id="degree-error" role="alert"></span>
+            </div>
+
+            <!-- 6. Graduation Year -->
+            <div class="form-group">
+              <label for="graduationYear" class="form-label">
+                Graduation Year <span class="required-mark" aria-hidden="true">*</span>
+              </label>
+              <input
+                type="number"
+                id="graduationYear"
+                name="graduationYear"
+                class="form-input"
+                placeholder="2027"
+                required
+                min="2020"
+                max="2035"
+              />
+              <span class="field-error" id="graduationYear-error" role="alert"></span>
+            </div>
+
+            <!-- 7. Skills -->
+            <div class="form-group">
+              <label for="skills" class="form-label">
+                Skills (Comma-separated) <span class="required-mark" aria-hidden="true">*</span>
+              </label>
+              <input
+                type="text"
+                id="skills"
+                name="skills"
+                class="form-input"
+                placeholder="e.g., Python, SQL, React, Git"
+                required
+              />
+              <span class="field-error" id="skills-error" role="alert"></span>
+            </div>
+
+            <!-- 8. Cover Letter (Optional) -->
+            <div class="form-group col-span-2">
+              <div class="field-hint-row">
+                <label for="coverLetter" class="form-label">Cover Letter / Note (Optional)</label>
+                <span><span id="char-count">0</span> / 2000</span>
+              </div>
+              <textarea
+                id="coverLetter"
+                name="coverLetter"
+                class="form-textarea"
+                rows="4"
+                maxlength="2000"
+                placeholder="Briefly describe your relevant projects and why you're interested in this role..."
+              ></textarea>
+              <span class="field-error" id="coverLetter-error" role="alert"></span>
+            </div>
+          </div>
+
+          <!-- Privacy Notice -->
+          <div class="privacy-notice-box">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <div>
+              <strong>Privacy Notice:</strong> We collect your academic details solely to process your application with the hiring organization. Your personal information is never shared with third parties or stored in browser storage.
+            </div>
+          </div>
+
+          <!-- Form Footer Actions -->
+          <div class="modal-footer">
+            <button type="button" id="btn-cancel-dialog" class="btn-secondary">
+              Cancel
+            </button>
+            <button type="submit" id="btn-submit-application" class="btn-primary">
+              Submit Application
+            </button>
+          </div>
+        </form>
+
+        <!-- Success Confirmation View -->
+        <div id="submission-success-view" class="submission-success-view" style="display: none;">
+          <div class="success-badge-icon" aria-hidden="true">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <h3 class="state-title">Application Submitted Successfully!</h3>
+          <p class="state-description">
+            Your application for <strong id="success-job-title">Position</strong> has been securely recorded and queued for recruiter evaluation.
+          </p>
+
+          <div class="success-ref-card">
+            <div class="ref-label">Application Reference ID</div>
+            <div id="success-ref-code" class="ref-code">#APP-101</div>
+          </div>
+
+          <button type="button" id="btn-success-close" class="btn-primary">
+            Done & Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container footer-content">
+      <p>&copy; 2026 InternHub. Secure Full-Stack Application Integration.</p>
+      <ul class="footer-links">
+        <li><span>Security Hardened</span></li>
+        <li><span>Parameterized SQL</span></li>
+        <li><span>Rate Limited</span></li>
+        <li><span>WCAG Accessible</span></li>
+      </ul>
+    </div>
+  </footer>
+
+  <!-- Application Script -->
+  <script type="module" src="/frontend/js/app.js"></script>
+</body>
+</html>
